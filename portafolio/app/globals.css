@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.skill-icon {
+  font-size: 4.15rem;
+  color: #c3a4ff;
+  filter: drop-shadow(0 0 6px rgba(169, 127, 255, 0.55));
+}
+
+.skill-card {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.skill-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(169, 127, 255, 0.85);
+  box-shadow: 0 10px 24px rgba(67, 27, 153, 0.3);
+}
