@@ -8,20 +8,121 @@ body {
   min-height: 100%;
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
 }
 
+/* Tech Grid Background */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: 
+    radial-gradient(ellipse at 50% 20%, rgba(119, 53, 255, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(7, 7, 9, 0) 30%, rgb(7, 7, 9) 95%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+  background-position: center top;
+  pointer-events: none;
+}
+
+/* Floating animation for hero avatar */
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Subtle icon styling and glow transitions */
 .skill-icon {
-  font-size: 4.15rem;
-  color: #c3a4ff;
-  filter: drop-shadow(0 0 6px rgba(169, 127, 255, 0.55));
+  font-size: 2.2rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.skill-card {
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+/* Devicon custom hover colors for specific skills */
+.card-skill-react:hover .skill-icon {
+  color: #61dafb;
+  filter: drop-shadow(0 0 10px rgba(97, 218, 251, 0.6));
+}
+.card-skill-nextjs:hover .skill-icon {
+  color: #ffffff;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+}
+.card-skill-typescript:hover .skill-icon {
+  color: #3178c6;
+  filter: drop-shadow(0 0 10px rgba(49, 120, 198, 0.6));
+}
+.card-skill-javascript:hover .skill-icon {
+  color: #f7df1e;
+  filter: drop-shadow(0 0 10px rgba(247, 223, 30, 0.6));
+}
+.card-skill-html5:hover .skill-icon {
+  color: #e34f26;
+  filter: drop-shadow(0 0 10px rgba(227, 79, 38, 0.6));
+}
+.card-skill-css3:hover .skill-icon {
+  color: #1572b6;
+  filter: drop-shadow(0 0 10px rgba(21, 114, 182, 0.6));
+}
+.card-skill-nodejs:hover .skill-icon {
+  color: #339933;
+  filter: drop-shadow(0 0 10px rgba(51, 153, 51, 0.6));
+}
+.card-skill-express:hover .skill-icon {
+  color: #ffffff;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+}
+.card-skill-postgresql:hover .skill-icon {
+  color: #4169e1;
+  filter: drop-shadow(0 0 10px rgba(65, 105, 225, 0.6));
+}
+.card-skill-mongodb:hover .skill-icon {
+  color: #47a248;
+  filter: drop-shadow(0 0 10px rgba(71, 162, 72, 0.6));
+}
+.card-skill-firebase:hover .skill-icon {
+  color: #ffca28;
+  filter: drop-shadow(0 0 10px rgba(255, 202, 40, 0.6));
+}
+.card-skill-supabase:hover .skill-icon {
+  color: #3ecf8e;
+  filter: drop-shadow(0 0 10px rgba(62, 207, 142, 0.6));
+}
+.card-skill-python:hover .skill-icon {
+  color: #3776ab;
+  filter: drop-shadow(0 0 10px rgba(55, 118, 171, 0.6));
+}
+.card-skill-csharp:hover .skill-icon {
+  color: #239120;
+  filter: drop-shadow(0 0 10px rgba(35, 145, 32, 0.6));
+}
+.card-skill-cplusplus:hover .skill-icon {
+  color: #00599c;
+  filter: drop-shadow(0 0 10px rgba(0, 89, 156, 0.6));
+}
+.card-skill-unity:hover .skill-icon {
+  color: #ffffff;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+}
+.card-skill-figma:hover .skill-icon {
+  color: #f24e1e;
+  filter: drop-shadow(0 0 10px rgba(242, 78, 30, 0.6));
+}
+.card-skill-git:hover .skill-icon {
+  color: #f05032;
+  filter: drop-shadow(0 0 10px rgba(240, 80, 50, 0.6));
 }
 
-.skill-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(169, 127, 255, 0.85);
-  box-shadow: 0 10px 24px rgba(67, 27, 153, 0.3);
-}

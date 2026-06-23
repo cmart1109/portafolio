@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Box,
   Button,
@@ -17,27 +19,79 @@ import {
   Stack,
   Center,
   Divider,
-  Fade,
+  useToast,
 } from "@chakra-ui/react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useLanguage } from "./LanguageContext";
 
-const ArrowForwardIcon = () => (
-  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M5 12h14M12 5l7 7-7 7" />
+// Custom SVG Icons to avoid extra dependencies and ensure fast load times
+const ArrowForwardIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
   </Icon>
 );
 
-const ExternalLinkIcon = () => (
-  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+const ExternalLinkIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" />
+    <line x1="10" y1="14" x2="21" y2="3" />
+  </Icon>
+);
+
+const GithubIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z" />
+  </Icon>
+);
+
+const LinkedinIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+  </Icon>
+);
+
+const MailIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </Icon>
+);
+
+const CopyIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </Icon>
+);
+
+const CheckIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="20 6 9 17 4 12" />
   </Icon>
 );
 
 export default function Home() {
-  const pixelHeadingStyles = {
-    fontFamily: "pixel",
-    fontWeight: "400",
-    letterSpacing: "wide",
+  const { t } = useLanguage();
+  const toast = useToast();
+  const [copied, setCopied] = useState(false);
+  const myEmail = "contact@christianmartinez.dev";
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(myEmail);
+    setCopied(true);
+    toast({
+      title: t("contact.toastTitle"),
+      description: t("contact.toastDesc"),
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+      position: "bottom-right",
+    });
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const skillsByTab = {
@@ -46,8 +100,8 @@ export default function Home() {
       { label: "Next.js", iconClass: "devicon-nextjs-plain" },
       { label: "TypeScript", iconClass: "devicon-typescript-plain" },
       { label: "JavaScript", iconClass: "devicon-javascript-plain" },
-      { label: "HTML", iconClass: "devicon-html5-plain" },
-      { label: "CSS", iconClass: "devicon-css3-plain" },
+      { label: "HTML5", iconClass: "devicon-html5-plain" },
+      { label: "CSS3", iconClass: "devicon-css3-plain" },
     ],
     backEnd: [
       { label: "Node.js", iconClass: "devicon-nodejs-plain" },
@@ -59,8 +113,8 @@ export default function Home() {
     ],
     other: [
       { label: "Python", iconClass: "devicon-python-plain" },
-      { label: "C#", iconClass: "devicon-csharp-plain" },
-      { label: "C++", iconClass: "devicon-cplusplus-plain" },
+      { label: "Csharp", iconClass: "devicon-csharp-plain" },
+      { label: "Cplusplus", iconClass: "devicon-cplusplus-plain" },
       { label: "Unity", iconClass: "devicon-unity-plain" },
       { label: "Figma", iconClass: "devicon-figma-plain" },
       { label: "Git", iconClass: "devicon-git-plain" },
@@ -68,265 +122,691 @@ export default function Home() {
   };
 
   const renderSkillsGrid = (skills: Array<{ label: string; iconClass: string }>) => (
-    <SimpleGrid columns={{ base: 2, md: 3 }} spacing={4}>
-      {skills.map((skill) => (
-        <Card
-          key={skill.label}
-          p={6}
-          bg="surface.800"
-          borderWidth="1px"
-          borderColor="brand.700"
-          borderRadius="xl"
-          boxShadow="sm"
-          justifyContent="center"
-          alignItems="center"
-          display="flex"
-          flexDirection="column"
-          transition="transform 200ms ease, box-shadow 200ms ease"
-          _hover={{ transform: "translateY(-6px)", boxShadow: "lg" }}
-        >
-          <Center
-            as="div"
-            boxSize="56px"
-            borderRadius="md"
-            bg="rgba(255,255,255,0.03)"
-            borderWidth="1px"
-            borderColor="transparent"
+    <SimpleGrid columns={{ base: 2, sm: 3, md: 3 }} spacing={5}>
+      {skills.map((skill) => {
+        const skillClass = `card-skill-${skill.label.toLowerCase()}`;
+        return (
+          <motion.div
+            key={skill.label}
+            whileHover={{ y: -6 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
           >
-            <Box as="i" className={`${skill.iconClass} skill-icon`} aria-hidden="true" fontSize="28px" />
-          </Center>
-          <Text color="gray.300" mt={3} fontSize="lg" fontWeight="600" textAlign="center">
-            {skill.label}
-          </Text>
-        </Card>
-      ))}
+            <Card
+              className={skillClass}
+              p={5}
+              bg="rgba(24, 24, 33, 0.5)"
+              backdropFilter="blur(10px)"
+              borderWidth="1px"
+              borderColor="rgba(169, 127, 255, 0.12)"
+              borderRadius="xl"
+              boxShadow="sm"
+              justifyContent="center"
+              alignItems="center"
+              display="flex"
+              flexDirection="column"
+              transition="all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+              _hover={{
+                borderColor: "rgba(169, 127, 255, 0.4)",
+                bg: "rgba(24, 24, 33, 0.8)",
+                boxShadow: "0 10px 24px rgba(119, 53, 255, 0.15)",
+              }}
+            >
+              <Center
+                boxSize="56px"
+                borderRadius="lg"
+                bg="rgba(255, 255, 255, 0.02)"
+                borderWidth="1px"
+                borderColor="rgba(255, 255, 255, 0.05)"
+                transition="all 0.3s"
+              >
+                <Box as="i" className={`${skill.iconClass} skill-icon`} aria-hidden="true" />
+              </Center>
+              <Text color="gray.300" mt={3} fontSize="sm" fontWeight="600" textAlign="center" letterSpacing="wide">
+                {skill.label === "Csharp" ? "C#" : skill.label === "Cplusplus" ? "C++" : skill.label}
+              </Text>
+            </Card>
+          </motion.div>
+        );
+      })}
     </SimpleGrid>
   );
 
   const projects = [
     {
-      title: "Project One",
-      description:
-        "A short summary of your project. Explain the problem, your approach, and the result.",
-      stack: ["Next.js", "Chakra UI", "TypeScript"],
+      title: t("projects.project1.title"),
+      description: t("projects.project1.desc"),
+      stack: ["Next.js", "Chakra UI", "TypeScript", "Framer Motion"],
+      github: "https://github.com",
+      demo: "https://example.com",
     },
     {
-      title: "Project Two",
-      description:
-        "Another project highlight. Keep this concise and measurable when possible.",
-      stack: ["React", "Node.js", "PostgreSQL"],
+      title: t("projects.project2.title"),
+      description: t("projects.project2.desc"),
+      stack: ["Node.js", "Express", "PostgreSQL", "Supabase"],
+      github: "https://github.com",
+      demo: "https://example.com",
     },
   ];
 
   return (
-    <main id="top">
+    <main id="home" style={{ position: "relative" }}>
+      {/* Dynamic Background components */}
+      <div className="grid-bg" />
+      
+      {/* Ambient glowing blobs */}
       <Box
-        bgGradient="linear(to-b, surface.950, surface.900)"
-        m={{ base: 4, md: 12 }}
-        borderRadius={20}
-        py={{ base: 8, md: 14 }}
+        position="absolute"
+        top="5%"
+        left="5%"
+        w={{ base: "260px", md: "400px" }}
+        h={{ base: "260px", md: "400px" }}
+        borderRadius="full"
+        bg="rgba(119, 53, 255, 0.08)"
+        filter="blur(120px)"
+        zIndex={-2}
+        pointerEvents="none"
+      />
+      <Box
+        position="absolute"
+        top="45%"
+        right="5%"
+        w={{ base: "300px", md: "500px" }}
+        h={{ base: "300px", md: "500px" }}
+        borderRadius="full"
+        bg="rgba(67, 39, 204, 0.06)"
+        filter="blur(140px)"
+        zIndex={-2}
+        pointerEvents="none"
+      />
+      <Box
+        position="absolute"
+        bottom="10%"
+        left="15%"
+        w={{ base: "280px", md: "450px" }}
+        h={{ base: "280px", md: "450px" }}
+        borderRadius="full"
+        bg="rgba(169, 127, 255, 0.05)"
+        filter="blur(130px)"
+        zIndex={-2}
+        pointerEvents="none"
+      />
+
+      <Box
+        m={{ base: 2, md: 8 }}
+        borderRadius={{ base: 24, md: 32 }}
+        py={{ base: 16, md: 24 }}
         minHeight="100vh"
-        boxShadow="inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 30px rgba(2,6,23,0.6)"
       >
         <Container maxW="5xl">
-          <VStack align="stretch" spacing={{ base: 10, md: 14 }}>
-            <Box id="about" minHeight={{ base: "60vh", md: "64vh" }} display="flex" alignItems="center" justifyContent="center">
-              <Stack direction={{ base: "column", md: "row" }} spacing={{ base: 8, md: 12 }} align="center" w="full">
-                <Box flex="1">
-                  <Heading
-                    size="3xl"
-                    lineHeight="1.05"
-                    maxW="xl"
-                    textAlign={{ base: "center", md: "left" }}
-                    bgGradient="linear(to-r, brand.300, brand.500)"
-                    bgClip="text"
-                  >
-                    Christian André Martinez
-                  </Heading>
-
-                  <Text
-                    fontFamily="pixel"
-                    fontSize={{ base: "xs", md: "sm" }}
-                    color="brand.300"
-                    fontWeight="500"
-                    letterSpacing="wide"
-                    textTransform="uppercase"
-                    textAlign={{ base: "center", md: "left" }}
-                    mt={2}
-                  >
-                    Fullstack Developer & UI Designer
-                  </Text>
-
-                  <Text mt={5} color="gray.300" maxW={{ base: "xl", md: "2xl" }} fontSize="lg" lineHeight="tall" textAlign={{ base: "center", md: "left" }}>
-                    A passionate developer building web apps with attention to
-                    detail, accessibility and delightful interactions. I craft
-                    interfaces that look great and feel smooth.
-                  </Text>
-
-                  <HStack spacing={4} mt={6} justifyContent={{ base: "center", md: "flex-start" }}>
-                    <Button colorScheme="brand" size="lg" fontFamily="pixel" rightIcon={<ArrowForwardIcon />}>
-                      View Projects
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      colorScheme="brand"
-                      size="lg"
-                      fontFamily="pixel"
-                      rightIcon={<ExternalLinkIcon />}
-                    >
-                      Contact Me
-                    </Button>
-                  </HStack>
-                </Box>
-
-                <Center flex="0 0 360px">
-                  <Image
-                    src="/placeholder-profile.svg"
-                    alt="Profile illustration"
-                    borderRadius="2xl"
-                    border="1px solid"
-                    borderColor="brand.700"
-                    boxShadow="lg"
-                    maxW={{ base: 220, md: 360 }}
-                    w="100%"
-                    bg="linear-gradient(135deg, rgba(255,255,255,0.02), transparent)"
-                    p={4}
-                  />
-                </Center>
-              </Stack>
-            </Box>
-
-            <Box id="projects">
-              <Stack direction={{ base: "column", md: "row" }} spacing={8} align="center">
-                <Box flex="1">
-                  <Heading size="xl" mb={4}>
-                    About Me
-                  </Heading>
-                  <Text color="gray.300" maxW="3xl" lineHeight="tall">
-                    I'm a fullstack developer with a passion for creating beautiful and functional web applications. With a background in UI design, I strive to build interfaces that are not only visually appealing but also user-friendly. I have experience working with a variety of technologies and am always eager to learn and take on new challenges.
-
-                    In my free time, I enjoy exploring new design trends, contributing to open-source projects, and collaborating with other developers to create innovative solutions.
-                  </Text>
-                </Box>
-
-                <Center flex="0 0 320px">
-                  <Card
-                    p={4}
-                    borderRadius="lg"
-                    bg="surface.800"
-                    borderWidth="1px"
-                    borderColor="brand.700"
-                    boxShadow="md"
-                    _hover={{ transform: "translateY(-6px)", boxShadow: "xl" }}
-                    transition="transform 200ms ease"
-                  >
-                    <Image
-                      src="/placeholder-profile.svg"
-                      alt="Placeholder profile illustration"
-                      borderRadius="lg"
-                      maxW={280}
-                      w="100%"
-                    />
-                  </Card>
-                </Center>
-              </Stack>
-            </Box>
-
-            <Box id="contact">
-              <Heading size="md" mb={4} {...pixelHeadingStyles}>
-                Skills
-              </Heading>
-              <Box>
-                <Tabs>
-                  <TabList>
-                    <Tab>FrontEnd</Tab>
-                    <Tab>BackEnd</Tab>
-                    <Tab>Other</Tab>
-                  </TabList>
-
-                  <TabPanels>
-                    <TabPanel>{renderSkillsGrid(skillsByTab.frontEnd)}</TabPanel>
-                    <TabPanel>{renderSkillsGrid(skillsByTab.backEnd)}</TabPanel>
-                    <TabPanel>{renderSkillsGrid(skillsByTab.other)}</TabPanel>
-                  </TabPanels>
-                </Tabs>
-              </Box>
-            </Box>
-
-            <Box>
-              <Heading size="md" mb={4} {...pixelHeadingStyles}>
-                Projects
-              </Heading>
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                {projects.map((project) => (
-                  <Card
-                    key={project.title}
-                    p={6}
-                    bg="surface.800"
-                    borderWidth="1px"
-                    borderColor="brand.700"
-                    borderRadius="xl"
-                    boxShadow="sm"
-                    transition="transform 200ms ease, box-shadow 200ms ease"
-                    _hover={{ transform: "translateY(-8px)", boxShadow: "xl" }}
-                  >
-                    <Heading size="sm" {...pixelHeadingStyles}>
-                      {project.title}
-                    </Heading>
-                    <Text mt={3} color="gray.300">
-                      {project.description}
-                    </Text>
-                    <Wrap mt={4} spacing={2}>
-                      {project.stack.map((item) => (
-                        <WrapItem key={`${project.title}-${item}`}>
-                          <Tag size="sm" variant="subtle" bg="rgba(255,255,255,0.02)" color="gray.200">
-                            {item}
-                          </Tag>
-                        </WrapItem>
-                      ))}
-                    </Wrap>
-                    <HStack mt={4} justify="flex-end">
-                      <Button size="sm" variant="ghost" colorScheme="brand">
-                        View
-                      </Button>
-                    </HStack>
-                  </Card>
-                ))}
-              </SimpleGrid>
-            </Box>
-
-            <Box>
-              <Heading size="md" mb={4} {...pixelHeadingStyles}>
-                Contact
-              </Heading>
-              <Text color="gray.300" mb={3}>
-                Replace these links with your real profiles and email.
-              </Text>
-              <HStack spacing={5} flexWrap="wrap">
-                <Link color="brand.300" href="mailto:hello@example.com">
-                  hello@example.com
-                </Link>
-                <Link color="brand.300" href="https://github.com" isExternal>
-                  GitHub
-                </Link>
-                <Link color="brand.300" href="https://linkedin.com" isExternal>
-                  LinkedIn
-                </Link>
-              </HStack>
-            </Box>
+          <VStack align="stretch" spacing={{ base: 20, md: 32 }}>
             
-            <Box as="footer" pt={10} pb={6}>
-              <Divider borderColor="rgba(255,255,255,0.03)" mb={4} />
-              <HStack justify="space-between" w="full">
-                <Text color="gray.400" fontSize="sm">
-                  © {new Date().getFullYear()} Christian André Martinez
+            {/* Hero / Intro Section */}
+            <Box minHeight={{ base: "75vh", md: "80vh" }} display="flex" alignItems="center">
+              <Stack direction={{ base: "column-reverse", md: "row" }} spacing={{ base: 12, md: 16 }} align="center" w="full">
+                <motion.div
+                  style={{ flex: 1.2 }}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                >
+                  <VStack align={{ base: "center", md: "flex-start" }} spacing={5}>
+                    <HStack
+                      bg="rgba(169, 127, 255, 0.07)"
+                      borderWidth="1px"
+                      borderColor="rgba(169, 127, 255, 0.2)"
+                      borderRadius="full"
+                      px={4}
+                      py={1.5}
+                      spacing={2}
+                    >
+                      <Box w="6px" h="6px" borderRadius="full" bg="brand.300" className="pulse-dot" />
+                      <Text
+                        fontFamily="pixel"
+                        fontSize={{ base: "8px", md: "9px" }}
+                        color="brand.200"
+                        fontWeight="600"
+                        letterSpacing="widest"
+                        textTransform="uppercase"
+                      >
+                        {t("hero.status")}
+                      </Text>
+                    </HStack>
+
+                    <Heading
+                      size="3xl"
+                      lineHeight="1.1"
+                      textAlign={{ base: "center", md: "left" }}
+                      bgGradient="linear(to-r, white, gray.200, brand.300)"
+                      bgClip="text"
+                      fontWeight="800"
+                      letterSpacing="-0.02em"
+                    >
+                      Christian André Martinez
+                    </Heading>
+
+                    <Text
+                      fontFamily="pixel"
+                      fontSize={{ base: "9px", md: "11px" }}
+                      color="brand.300"
+                      fontWeight="500"
+                      letterSpacing="2px"
+                      textTransform="uppercase"
+                      textAlign={{ base: "center", md: "left" }}
+                      textShadow="0 0 10px rgba(169, 127, 255, 0.2)"
+                    >
+                      {t("hero.subtitle")}
+                    </Text>
+
+                    <Text 
+                      color="gray.400" 
+                      maxW={{ base: "xl", md: "2xl" }} 
+                      fontSize="lg" 
+                      lineHeight="tall" 
+                      textAlign={{ base: "center", md: "left" }}
+                    >
+                      {t("hero.description")}
+                    </Text>
+
+                    <Stack direction={{ base: "column", sm: "row" }} spacing={4} pt={4} w={{ base: "full", sm: "auto" }} justify={{ base: "center", md: "flex-start" }}>
+                      <Button
+                        as="a"
+                        href="#projects"
+                        colorScheme="brand"
+                        bg="brand.500"
+                        size="lg"
+                        borderRadius="full"
+                        px={8}
+                        _hover={{
+                          bg: "brand.600",
+                          transform: "translateY(-2px)",
+                          boxShadow: "0 8px 24px rgba(119, 53, 255, 0.35)",
+                        }}
+                        transition="all 0.2s"
+                        rightIcon={<ArrowForwardIcon />}
+                      >
+                        {t("hero.btnProjects")}
+                      </Button>
+                      <Button
+                        as="a"
+                        href="#contact"
+                        variant="outline"
+                        color="white"
+                        borderColor="rgba(255, 255, 255, 0.15)"
+                        size="lg"
+                        borderRadius="full"
+                        px={8}
+                        _hover={{
+                          bg: "rgba(255, 255, 255, 0.05)",
+                          borderColor: "rgba(255, 255, 255, 0.3)",
+                          transform: "translateY(-2px)",
+                        }}
+                        transition="all 0.2s"
+                      >
+                        {t("hero.btnTalk")}
+                      </Button>
+                    </Stack>
+                  </VStack>
+                </motion.div>
+
+                <Center flex="0.8">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+                    className="float-animation"
+                  >
+                    <Box
+                      position="relative"
+                      borderRadius="3xl"
+                      p={4}
+                      bg="linear-gradient(135deg, rgba(169, 127, 255, 0.1), transparent)"
+                      border="1px solid"
+                      borderColor="rgba(169, 127, 255, 0.15)"
+                      boxShadow="2xl"
+                    >
+                      <Image
+                        src="/placeholder-profile.svg"
+                        alt="Christian André Martinez Profile"
+                        borderRadius="2xl"
+                        maxW={{ base: 220, md: 320 }}
+                        w="100%"
+                        bg="rgba(15, 15, 20, 0.4)"
+                        backdropFilter="blur(8px)"
+                        transition="all 0.3s"
+                      />
+                    </Box>
+                  </motion.div>
+                </Center>
+              </Stack>
+            </Box>
+
+            {/* About Me Section */}
+            <Box id="about">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <Stack direction={{ base: "column", md: "row" }} spacing={{ base: 12, md: 16 }} align="center">
+                  <Box flex="1">
+                    <HStack spacing={3} mb={3}>
+                      <Box w="8px" h="8px" borderRadius="full" bg="brand.400" />
+                      <Text color="brand.300" fontWeight="700" textTransform="uppercase" fontSize="xs" letterSpacing="widest">
+                        {t("about.intro")}
+                      </Text>
+                    </HStack>
+                    <Heading size="xl" mb={6} fontWeight="700">
+                      {t("about.title")}
+                    </Heading>
+                    <Text color="gray.400" fontSize="md" lineHeight="1.8" mb={6}>
+                      {t("about.p1")}
+                    </Text>
+                    <Text color="gray.400" fontSize="md" lineHeight="1.8">
+                      {t("about.p2")}
+                    </Text>
+                  </Box>
+
+                  <Center flex="0 0 340px" w="full">
+                    <Card
+                      w="full"
+                      p={6}
+                      borderRadius="2xl"
+                      bg="rgba(24, 24, 33, 0.4)"
+                      backdropFilter="blur(12px)"
+                      borderWidth="1px"
+                      borderColor="rgba(169, 127, 255, 0.15)"
+                      boxShadow="xl"
+                      transition="all 0.3s"
+                      _hover={{
+                        transform: "translateY(-4px)",
+                        borderColor: "rgba(169, 127, 255, 0.4)",
+                        boxShadow: "0 10px 30px rgba(119, 53, 255, 0.15)",
+                      }}
+                    >
+                      <VStack align="stretch" spacing={4}>
+                        <Heading size="xs" fontFamily="pixel" color="brand.300" textTransform="uppercase" letterSpacing="wide">
+                          {t("about.techCardTitle")}
+                        </Heading>
+                        <Divider borderColor="rgba(255, 255, 255, 0.08)" />
+                        
+                        <Box>
+                          <Text fontSize="10px" color="gray.500" fontWeight="700" textTransform="uppercase" letterSpacing="1px">{t("about.location")}</Text>
+                          <Text fontSize="sm" color="gray.200" fontWeight="600" mt={0.5}>{t("about.locationVal")}</Text>
+                        </Box>
+                        
+                        <Box>
+                          <Text fontSize="10px" color="gray.500" fontWeight="700" textTransform="uppercase" letterSpacing="1px">{t("about.experience")}</Text>
+                          <Text fontSize="sm" color="gray.200" fontWeight="600" mt={0.5}>{t("about.experienceVal")}</Text>
+                        </Box>
+                        
+                        <Box>
+                          <Text fontSize="10px" color="gray.500" fontWeight="700" textTransform="uppercase" letterSpacing="1px">{t("about.focus")}</Text>
+                          <Text fontSize="sm" color="gray.200" fontWeight="600" mt={0.5}>{t("about.focusVal")}</Text>
+                        </Box>
+                        
+                        <Box>
+                          <Text fontSize="10px" color="gray.500" fontWeight="700" textTransform="uppercase" letterSpacing="1px">{t("about.job")}</Text>
+                          <HStack spacing={2} mt={1}>
+                            <Box w="8px" h="8px" borderRadius="full" bg="green.400" className="pulse-dot" style={{ boxShadow: "0 0 8px rgba(72, 187, 120, 0.8)" }} />
+                            <Text fontSize="sm" color="gray.300" fontWeight="600">{t("about.jobVal")}</Text>
+                          </HStack>
+                        </Box>
+                      </VStack>
+                    </Card>
+                  </Center>
+                </Stack>
+              </motion.div>
+            </Box>
+
+            {/* Skills Section */}
+            <Box id="skills">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <VStack align="center" spacing={4} mb={10}>
+                  <HStack spacing={3}>
+                    <Box w="8px" h="8px" borderRadius="full" bg="brand.400" />
+                    <Text color="brand.300" fontWeight="700" textTransform="uppercase" fontSize="xs" letterSpacing="widest">
+                      {t("skills.intro")}
+                    </Text>
+                  </HStack>
+                  <Heading size="xl" textAlign="center" fontWeight="700">
+                    {t("skills.title")}
+                  </Heading>
+                </VStack>
+
+                <Box>
+                  <Tabs variant="soft-rounded" align="center">
+                    <TabList
+                      bg="rgba(15, 15, 20, 0.5)"
+                      p={1.5}
+                      borderRadius="full"
+                      borderWidth="1px"
+                      borderColor="rgba(169, 127, 255, 0.15)"
+                      display="inline-flex"
+                      mb={8}
+                    >
+                      <Tab
+                        borderRadius="full"
+                        color="gray.400"
+                        fontWeight="700"
+                        fontSize="xs"
+                        px={{ base: 4, md: 8 }}
+                        py={2}
+                        textTransform="uppercase"
+                        letterSpacing="1px"
+                        _selected={{
+                          color: "white",
+                          bg: "brand.500",
+                          boxShadow: "0 4px 15px rgba(119, 53, 255, 0.35)",
+                        }}
+                      >
+                        {t("skills.tab1")}
+                      </Tab>
+                      <Tab
+                        borderRadius="full"
+                        color="gray.400"
+                        fontWeight="700"
+                        fontSize="xs"
+                        px={{ base: 4, md: 8 }}
+                        py={2}
+                        textTransform="uppercase"
+                        letterSpacing="1px"
+                        _selected={{
+                          color: "white",
+                          bg: "brand.500",
+                          boxShadow: "0 4px 15px rgba(119, 53, 255, 0.35)",
+                        }}
+                      >
+                        {t("skills.tab2")}
+                      </Tab>
+                      <Tab
+                        borderRadius="full"
+                        color="gray.400"
+                        fontWeight="700"
+                        fontSize="xs"
+                        px={{ base: 4, md: 8 }}
+                        py={2}
+                        textTransform="uppercase"
+                        letterSpacing="1px"
+                        _selected={{
+                          color: "white",
+                          bg: "brand.500",
+                          boxShadow: "0 4px 15px rgba(119, 53, 255, 0.35)",
+                        }}
+                      >
+                        {t("skills.tab3")}
+                      </Tab>
+                    </TabList>
+
+                    <TabPanels>
+                      <TabPanel p={0}>{renderSkillsGrid(skillsByTab.frontEnd)}</TabPanel>
+                      <TabPanel p={0}>{renderSkillsGrid(skillsByTab.backEnd)}</TabPanel>
+                      <TabPanel p={0}>{renderSkillsGrid(skillsByTab.other)}</TabPanel>
+                    </TabPanels>
+                  </Tabs>
+                </Box>
+              </motion.div>
+            </Box>
+
+            {/* Projects Section */}
+            <Box id="projects">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <VStack align="center" spacing={4} mb={12}>
+                  <HStack spacing={3}>
+                    <Box w="8px" h="8px" borderRadius="full" bg="brand.400" />
+                    <Text color="brand.300" fontWeight="700" textTransform="uppercase" fontSize="xs" letterSpacing="widest">
+                      {t("projects.intro")}
+                    </Text>
+                  </HStack>
+                  <Heading size="xl" textAlign="center" fontWeight="700">
+                    {t("projects.title")}
+                  </Heading>
+                </VStack>
+
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
+                  {projects.map((project) => (
+                    <motion.div
+                      key={project.title}
+                      whileHover={{ y: -8 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                    >
+                      <Card
+                        overflow="hidden"
+                        bg="rgba(24, 24, 33, 0.4)"
+                        backdropFilter="blur(12px)"
+                        borderWidth="1px"
+                        borderColor="rgba(169, 127, 255, 0.15)"
+                        borderRadius="2xl"
+                        boxShadow="lg"
+                        transition="all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+                        _hover={{
+                          borderColor: "rgba(169, 127, 255, 0.4)",
+                          boxShadow: "0 15px 30px rgba(119, 53, 255, 0.15)",
+                        }}
+                      >
+                        {/* Editor window topbar mockup */}
+                        <Box
+                          w="full"
+                          bg="rgba(15, 15, 20, 0.6)"
+                          borderBottomWidth="1px"
+                          borderColor="rgba(169, 127, 255, 0.1)"
+                          px={4}
+                          py={3}
+                          display="flex"
+                          alignItems="center"
+                        >
+                          <HStack spacing={1.5}>
+                            <Box w="8px" h="8px" borderRadius="full" bg="#ff5f56" />
+                            <Box w="8px" h="8px" borderRadius="full" bg="#ffbd2e" />
+                            <Box w="8px" h="8px" borderRadius="full" bg="#27c93f" />
+                          </HStack>
+                        </Box>
+
+                        <Box p={6}>
+                          <Heading size="md" fontWeight="700" letterSpacing="wide" color="white">
+                            {project.title}
+                          </Heading>
+                          <Text mt={3} color="gray.400" fontSize="sm" lineHeight="1.6" minH="72px">
+                            {project.description}
+                          </Text>
+                          
+                          <Wrap mt={6} spacing={2}>
+                            {project.stack.map((item) => (
+                              <WrapItem key={`${project.title}-${item}`}>
+                                <Tag
+                                  size="sm"
+                                  variant="subtle"
+                                  bg="rgba(169, 127, 255, 0.08)"
+                                  color="brand.200"
+                                  borderColor="rgba(169, 127, 255, 0.15)"
+                                  borderWidth="1px"
+                                  borderRadius="md"
+                                  fontWeight="600"
+                                  fontSize="10px"
+                                >
+                                  {item}
+                                </Tag>
+                              </WrapItem>
+                            ))}
+                          </Wrap>
+
+                          <Divider borderColor="rgba(255, 255, 255, 0.06)" my={5} />
+
+                          <HStack justify="space-between" align="center">
+                            <Link
+                              href={project.github}
+                              isExternal
+                              display="flex"
+                              alignItems="center"
+                              color="gray.400"
+                              fontSize="xs"
+                              fontWeight="600"
+                              _hover={{ color: "brand.300", textDecoration: "none" }}
+                            >
+                              <GithubIcon boxSize="16px" mr={1.5} />
+                              {t("projects.code")}
+                            </Link>
+                            
+                            <Button
+                              as="a"
+                              href={project.demo}
+                              target="_blank"
+                              size="sm"
+                              variant="ghost"
+                              color="brand.300"
+                              _hover={{ bg: "rgba(169, 127, 255, 0.08)", color: "brand.200" }}
+                              rightIcon={<ExternalLinkIcon boxSize="12px" />}
+                            >
+                              {t("projects.demo")}
+                            </Button>
+                          </HStack>
+                        </Box>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </SimpleGrid>
+              </motion.div>
+            </Box>
+
+            {/* Contact Section */}
+            <Box id="contact">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <Center>
+                  <Card
+                    w="full"
+                    maxW="3xl"
+                    p={{ base: 8, md: 12 }}
+                    borderRadius="3xl"
+                    bg="rgba(15, 15, 20, 0.55)"
+                    backdropFilter="blur(16px)"
+                    borderWidth="1px"
+                    borderColor="rgba(169, 127, 255, 0.18)"
+                    boxShadow="2xl"
+                    position="relative"
+                    overflow="hidden"
+                  >
+                    {/* Glowing effect inside card */}
+                    <Box
+                      position="absolute"
+                      top="-50px"
+                      right="-50px"
+                      w="200px"
+                      h="200px"
+                      borderRadius="full"
+                      bg="rgba(119, 53, 255, 0.12)"
+                      filter="blur(50px)"
+                      pointerEvents="none"
+                    />
+
+                    <VStack spacing={6} align="center" textAlign="center" position="relative" zIndex={1}>
+                      <Center
+                        boxSize="64px"
+                        borderRadius="2xl"
+                        bg="rgba(169, 127, 255, 0.08)"
+                        borderWidth="1px"
+                        borderColor="rgba(169, 127, 255, 0.2)"
+                        color="brand.300"
+                      >
+                        <MailIcon boxSize="28px" />
+                      </Center>
+                      
+                      <VStack spacing={2}>
+                        <Heading size="lg" fontWeight="800" color="white">
+                          {t("contact.title")}
+                        </Heading>
+                        <Text color="gray.400" maxW="lg" fontSize="md">
+                          {t("contact.desc")}
+                        </Text>
+                      </VStack>
+
+                      <Button
+                        size="lg"
+                        borderRadius="full"
+                        colorScheme="brand"
+                        bg="rgba(169, 127, 255, 0.07)"
+                        color="brand.200"
+                        borderWidth="1px"
+                        borderColor="rgba(169, 127, 255, 0.25)"
+                        px={8}
+                        py={7}
+                        _hover={{
+                          bg: "rgba(169, 127, 255, 0.12)",
+                          borderColor: "rgba(169, 127, 255, 0.4)",
+                          transform: "translateY(-2px)",
+                        }}
+                        transition="all 0.2s"
+                        onClick={handleCopyEmail}
+                        leftIcon={copied ? <CheckIcon boxSize="18px" /> : <CopyIcon boxSize="18px" />}
+                      >
+                        {copied ? t("contact.copied") : myEmail}
+                      </Button>
+
+                      <HStack spacing={4} pt={4}>
+                        <Button
+                          as="a"
+                          href="https://github.com"
+                          target="_blank"
+                          variant="outline"
+                          borderColor="rgba(255, 255, 255, 0.1)"
+                          bg="rgba(255, 255, 255, 0.02)"
+                          color="gray.300"
+                          size="md"
+                          borderRadius="full"
+                          _hover={{ bg: "rgba(255, 255, 255, 0.06)", color: "white", borderColor: "rgba(255, 255, 255, 0.2)" }}
+                          leftIcon={<GithubIcon boxSize="18px" />}
+                        >
+                          GitHub
+                        </Button>
+                        <Button
+                          as="a"
+                          href="https://linkedin.com"
+                          target="_blank"
+                          variant="outline"
+                          borderColor="rgba(255, 255, 255, 0.1)"
+                          bg="rgba(255, 255, 255, 0.02)"
+                          color="gray.300"
+                          size="md"
+                          borderRadius="full"
+                          _hover={{ bg: "rgba(255, 255, 255, 0.06)", color: "white", borderColor: "rgba(255, 255, 255, 0.2)" }}
+                          leftIcon={<LinkedinIcon boxSize="18px" />}
+                        >
+                          LinkedIn
+                        </Button>
+                      </HStack>
+                    </VStack>
+                  </Card>
+                </Center>
+              </motion.div>
+            </Box>
+
+            {/* Footer */}
+            <Box as="footer" pt={6} pb={6}>
+              <Divider borderColor="rgba(255, 255, 255, 0.06)" mb={6} />
+              <HStack justify="space-between" w="full" flexDir={{ base: "column", sm: "row" }} spacing={4}>
+                <Text color="gray.500" fontSize="xs" textAlign={{ base: "center", sm: "left" }}>
+                  © {new Date().getFullYear()} {t("footer.rights")}
                 </Text>
-                <HStack spacing={4}>
-                  <Link color="gray.400" href="#top">
-                    Back to top
+                <HStack spacing={6}>
+                  <Link color="gray.500" href="#home" fontSize="xs" _hover={{ color: "brand.300", textDecoration: "none" }}>
+                    {t("footer.top")}
                   </Link>
-                  <Link color="brand.300" href="/cv.pdf" isExternal>
-                    Resume
+                  <Link color="brand.300" href="/cv.pdf" isExternal fontSize="xs" fontWeight="600" _hover={{ color: "brand.200", textDecoration: "none" }}>
+                    {t("footer.cv")}
                   </Link>
                 </HStack>
               </HStack>
@@ -337,3 +817,5 @@ export default function Home() {
     </main>
   );
 }
+
+

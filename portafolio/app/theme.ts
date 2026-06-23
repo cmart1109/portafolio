@@ -36,13 +36,27 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bgGradient: "linear(to-b, brand.900, brand.800, brand.700)",
-        bgAttachment: "fixed",
+        bg: "surface.950",
         color: "gray.100",
+        overflowX: "hidden",
       },
       "::selection": {
         bg: "brand.500",
         color: "white",
+      },
+      /* Custom modern scrollbar styles */
+      "::-webkit-scrollbar": {
+        width: "8px",
+      },
+      "::-webkit-scrollbar-track": {
+        bg: "surface.950",
+      },
+      "::-webkit-scrollbar-thumb": {
+        bg: "brand.800",
+        borderRadius: "4px",
+      },
+      "::-webkit-scrollbar-thumb:hover": {
+        bg: "brand.600",
       },
     },
   },
