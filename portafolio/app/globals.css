@@ -2,6 +2,49 @@
   box-sizing: border-box;
 }
 
+/* Offset anchors so the fixed header never covers a section title */
+section[id] {
+  scroll-margin-top: 120px;
+}
+
+/* Pulsing status indicator */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Clear, consistent keyboard focus ring */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #a97fff;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Honor the user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 html,
 body {
   width: 100%;
